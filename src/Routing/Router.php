@@ -177,6 +177,19 @@ class Router implements RouterInterface
                 $referenceType
             );
         } catch (RouteNotFoundException $e) {
+            // try with default locale if there is one and current locale is different
+            if (!empty($this->defaultLocale) && $this->defaultLocale !== $locale) {
+                try {
+                    return $this->router->generate(
+                        $this->routeNameInflector->inflect($name, $this->defaultLocale),
+                        $parameters,
+                        $referenceType
+                    );
+                } catch (RouteNotFoundException $e) {
+                    throw new RouteNotFoundException(sprintf('I18nRoute "%s" (default %s) does not exist.', $name, $this->defaultLocale));
+                }
+            }
+
             throw new RouteNotFoundException(sprintf('I18nRoute "%s" (%s) does not exist.', $name, $locale));
         }
     }
