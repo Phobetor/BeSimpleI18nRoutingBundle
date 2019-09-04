@@ -90,16 +90,12 @@ class Router implements RouterInterface
             return $this->generateI18n($name, $locale, $parameters, $referenceType);
         }
 
-        try {
+        $locale = $this->getLocale($parameters);
+        if (null !== $locale) {
+            // at this point here we would never have $parameters['translate'] due to condition before
+            return $this->generateI18n($name, $locale, $parameters, $referenceType);
+        } else {
             return $this->router->generate($name, $parameters, $referenceType);
-        } catch (RouteNotFoundException $e) {
-            $locale = $this->getLocale($parameters);
-            if (null !== $locale) {
-                // at this point here we would never have $parameters['translate'] due to condition before
-                return $this->generateI18n($name, $locale, $parameters, $referenceType);
-            }
-
-            throw $e;
         }
     }
 
